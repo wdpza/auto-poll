@@ -84,7 +84,8 @@ async function createPoll() {
                             emoji: null, // Optional emoji field
                             poll_media: { text: option } // Poll Media Object for answer
                         })),
-                        duration_minutes: config.poll_duration // Poll duration in minutes
+                        duration_minutes: config.poll_duration // Poll duration in minutes.
+                        // This doesn't seem to work. Poll duration is still 24h.
                     }
                 }
             });
