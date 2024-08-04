@@ -5,8 +5,7 @@ const connection = require('./db/db_connection');
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
-
-const poll_id = 1; // Specify the ID of the poll question to fetch
+const config = require('./config.json');
 
 // Fetch poll question and answers by ID
 function fetchPollQuestionById(id, callback) {
@@ -56,7 +55,7 @@ function getRandomOptions(options, count = 3) {
 
 // Ceate a poll
 async function createPoll() {
-    fetchPollQuestionById(poll_id, async (err, pollData) => {
+    fetchPollQuestionById(config.poll_id, async (err, pollData) => {
         if (err) {
             console.error('Error fetching poll question:', err);
             return;
@@ -85,7 +84,7 @@ async function createPoll() {
                             emoji: null, // Optional emoji field
                             poll_media: { text: option } // Poll Media Object for answer
                         })),
-                        duration_minutes: 60 * 2 // Poll duration in minutes
+                        duration_minutes: config.poll_duration // Poll duration in minutes
                     }
                 }
             });
@@ -102,11 +101,8 @@ client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}`);
     console.log(process.env.POLL_CHANNEL_ID);
 
-    // Schedule the poll creation every Friday at 13:00
-    //schedule.scheduleJob('0 13 * * 5', createPoll);
-
-    // Schedule the poll creation every 10 seconds for testing
-    schedule.scheduleJob('*/10 * * * * *', createPoll);
+    // Schedule the poll
+    schedule.scheduleJob(config.poll_schedule, createPoll);
 });
 
 client.login(process.env.DISCORD_TOKEN);
